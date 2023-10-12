@@ -35,4 +35,21 @@ class Validator
     {
         return $this->strategy->validate($data);
     }
+
+    public function validateDataWithErrors($data): array
+    {
+        $isValid = $this->strategy->validate($data);
+        if ($isValid) {
+            return ['isValid' => true];
+        }
+
+        if (method_exists($this->strategy, 'getErrors')) {
+            return [
+                'isValid' => false,
+                'errors' => $this->strategy->getErrors()
+            ];
+        }
+
+        return ['isValid' => false];
+    }
 }

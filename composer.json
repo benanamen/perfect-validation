@@ -23,6 +23,14 @@
     },
     "require-dev": {
         "codeception/codeception": "^5.0",
-        "codeception/module-asserts": "*"
+        "codeception/module-asserts": "*",
+        "vimeo/psalm": "^5.12",
+        "nunomaduro/phpinsights": "^2.8",
+        "phpstan/phpstan": "^1.10"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

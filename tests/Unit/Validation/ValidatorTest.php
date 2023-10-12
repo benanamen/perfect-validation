@@ -2,6 +2,7 @@
 
 namespace Unit\Validation;
 
+use PerfectApp\Validation\RequiredFieldsValidationStrategy;
 use PerfectApp\Validation\ValidationStrategy;
 use PerfectApp\Validation\Validator;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -48,5 +49,39 @@ class ValidatorTest extends TestCase
 
         // Assert that the current strategy is now the second mock strategy
         $this->assertSame($strategy2, $currentStrategy);
+    }
+
+    public function testValidateDataWithErrorsReturnsIsValidTrue(): void
+    {
+        $strategy = $this->createMock(ValidationStrategy::class);
+        $strategy->method('validate')->willReturn(true);
+
+        $validator = new Validator($strategy);
+        $result = $validator->validateDataWithErrors('some data');
+
+        $this->assertSame(['isValid' => true], $result);
+    }
+
+    public function testValidateDataWithErrorsReturnsIsValidFalse(): void
+    {
+        $strategy = $this->createMock(ValidationStrategy::class);
+        $strategy->method('validate')->willReturn(false);
+
+        $validator = new Validator($strategy);
+        $result = $validator->validateDataWithErrors('some data');
+
+        $this->assertSame(['isValid' => false], $result);
+    }
+
+    public function testValidateDataWithErrorsReturnsErrorsWhenGetErrorsMethodExists(): void
+    {
+        $strategy = $this->createMock(RequiredFieldsValidationStrategy::class);
+        $strategy->method('validate')->willReturn(false);
+        $strategy->method('getErrors')->willReturn(['error1', 'error2']);
+
+        $validator = new Validator($strategy);
+        $result = $validator->validateDataWithErrors('some data');
+
+        $this->assertSame(['isValid' => false, 'errors' => ['error1', 'error2']], $result);
     }
 }

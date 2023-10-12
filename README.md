@@ -31,6 +31,7 @@ class Validator {
     public function __construct(ValidationStrategy $strategy);
     public function setValidationStrategy(ValidationStrategy $strategy): void;
     public function validateData($data): mixed;
+    public function validateDataWithErrors($data): array;
 }
 ```
 
@@ -50,11 +51,15 @@ This method allows you to set a new validation strategy by providing a `Validati
 
 The `validateData` method is used to perform data validation using the current validation strategy. It accepts the data to be validated as a parameter and returns the validation result.
 
+### `validateDataWithErrors($data): array`
+
+The `validateDataWithErrors` method performs data validation and returns an array containing the validation status and any errors, if applicable. If the strategy object has a `getErrors` method, the errors will be included in the array.
+
 - Parameters:
-    - `$data`: The data to be validated.
+  - `$data`: The data to be validated.
 
 - Return:
-    - Returns the validation result, which depends on the specific validation strategy being used. It can be a boolean value (`true` for a successful validation, `false` otherwise) or other data types based on the strategy implementation.
+  - Returns the validation result, which depends on the specific validation strategy being used. It can be a boolean value (`true` for a successful validation, `false` otherwise) or other data types based on the strategy implementation or an array with the validation status and errors, if any.
 
 ## Usage Example
 
@@ -71,9 +76,14 @@ $validator->setValidationStrategy($customValidationStrategy);
 $data = $_POST; // Example data to be validated
 $result = $validator->validateData($data);
 
+// Perform data validation with errors
+$resultWithErrors = $validator->validateDataWithErrors($data);
+
 // Check the validation result
 if ($result === true) {
     echo "Validation passed! The data is valid.";
+} elseif (isset($resultWithErrors['errors'])) {
+    echo "Validation failed! Errors: " . implode(', ', $resultWithErrors['errors']);
 } else {
     echo "Validation failed! Please check the data for errors.";
 }
@@ -82,8 +92,8 @@ if ($result === true) {
 In the example above:
 1. The `Validator` class is instantiated with an initial validation strategy (`$requiredFieldsStrategy`).
 2. If needed, you can use the `setValidationStrategy` method to switch to a different validation strategy.
-3. The `validateData` method is called with the data to be validated (`$data`).
-4. The returned result is checked to determine if the validation passed or failed.
-5. Based on the validation result, you can perform appropriate actions or display error messages.
+3. The `validateData` and `validateDataWithErrors` methods are called with the data to be validated (`$data`).
+4. The returned results are checked to determine if the validation passed or failed.
+5. Based on the validation results, you can perform appropriate actions or display error messages.
 
 Note: The specific validation strategies used (`$requiredFieldsStrategy` and `$customValidationStrategy`) are not shown in the example, as they depend on your specific implementation.
