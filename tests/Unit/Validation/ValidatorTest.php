@@ -11,43 +11,39 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Validator::class)]
 class ValidatorTest extends TestCase
 {
+    private array $testDataArray;
+
+    protected function setUp(): void
+    {
+        $this->testDataArray = ['key' => 'value'];
+    }
+
     public function testValidateDataReturnsValidationResult()
     {
-        // Create a mock ValidationStrategy
         $strategy = $this->createMock(ValidationStrategy::class);
-
-        // Set up the expected behavior of the mock strategy
         $strategy->expects($this->once())
             ->method('validate')
-            ->with('test_data')
+            ->with($this->testDataArray)
             ->willReturn(true);
 
-        // Create the Validator with the mock strategy
         $validator = new Validator($strategy);
-
-        // Call the validateData method and assert the result
-        $result = $validator->validateData('test_data');
+        $result = $validator->validateData($this->testDataArray);
         $this->assertTrue($result);
     }
 
     public function testSetValidationStrategyChangesStrategy()
     {
-        // Create mock ValidationStrategy objects
         $strategy1 = $this->createMock(ValidationStrategy::class);
         $strategy2 = $this->createMock(ValidationStrategy::class);
 
-        // Create the Validator with the first mock strategy
         $validator = new Validator($strategy1);
-
-        // Call the setValidationStrategy method with the second mock strategy
         $validator->setValidationStrategy($strategy2);
 
-        // Access the private $strategy property using reflection
         $reflector = new \ReflectionClass($validator);
         $property = $reflector->getProperty('strategy');
+        $property->setAccessible(true);
         $currentStrategy = $property->getValue($validator);
 
-        // Assert that the current strategy is now the second mock strategy
         $this->assertSame($strategy2, $currentStrategy);
     }
 
@@ -57,7 +53,7 @@ class ValidatorTest extends TestCase
         $strategy->method('validate')->willReturn(true);
 
         $validator = new Validator($strategy);
-        $result = $validator->validateDataWithErrors('some data');
+        $result = $validator->validateDataWithErrors($this->testDataArray);
 
         $this->assertSame(['isValid' => true], $result);
     }
@@ -68,7 +64,7 @@ class ValidatorTest extends TestCase
         $strategy->method('validate')->willReturn(false);
 
         $validator = new Validator($strategy);
-        $result = $validator->validateDataWithErrors('some data');
+        $result = $validator->validateDataWithErrors($this->testDataArray);
 
         $this->assertSame(['isValid' => false], $result);
     }
@@ -80,7 +76,7 @@ class ValidatorTest extends TestCase
         $strategy->method('getErrors')->willReturn(['error1', 'error2']);
 
         $validator = new Validator($strategy);
-        $result = $validator->validateDataWithErrors('some data');
+        $result = $validator->validateDataWithErrors($this->testDataArray);
 
         $this->assertSame(['isValid' => false, 'errors' => ['error1', 'error2']], $result);
     }
