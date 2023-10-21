@@ -4,5 +4,5 @@ namespace PerfectApp\Validation;
 
 interface ValidationStrategy {
 
-    public function validate($data);
+    public function validate(array $data);
 }

@@ -26,16 +26,17 @@ class RequiredFieldsValidationStrategy implements ValidationStrategy
     }
 
     /**
-     * @param $data
+     * @param array $data
      * @return bool
      */
-    public function validate($data): bool
+    public function validate(array $data): bool
     {
         $this->errors = [];
 
         foreach ($this->requiredFields as $field) {
-            $isFieldEmpty = !isset($data[$field]) || empty($data[$field]);
-            $isFieldArrayWithEmptyValues = isset($data[$field]) && is_array($data[$field]) && array_filter($data[$field]) === [];
+            $fieldValue = $data[$field] ?? null;
+            $isFieldEmpty = empty($fieldValue);
+            $isFieldArrayWithEmptyValues = is_array($fieldValue) && array_filter($fieldValue) === [];
 
             if ($isFieldEmpty || $isFieldArrayWithEmptyValues) {
                 $msg = ucwords(str_replace('_', ' ', $field));
