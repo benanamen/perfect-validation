@@ -68,4 +68,37 @@ class RequiredFieldsValidationStrategyTest extends TestCase
 
         $this->assertEquals($expectedErrors, $errors);
     }
+
+    public function testValidateReturnsFalseForEmptyArrayField()
+    {
+        $requiredFields = ['username', 'role_id'];
+        $data = [
+            'username' => 'john',
+            'role_id' => []
+        ];
+
+        $strategy = new RequiredFieldsValidationStrategy($requiredFields);
+        $result = $strategy->validate($data);
+
+        $this->assertFalse($result);
+    }
+
+    public function testGetErrorsReturnsArrayWithErrorMessageForEmptyArrayField()
+    {
+        $requiredFields = ['username', 'role_id'];
+        $data = [
+            'username' => 'john',
+            'role_id' => []
+        ];
+
+        $strategy = new RequiredFieldsValidationStrategy($requiredFields);
+        $strategy->validate($data);
+        $errors = $strategy->getErrors();
+
+        $expectedErrors = [
+            'role_id' => 'Role Id is required.',
+        ];
+
+        $this->assertEquals($expectedErrors, $errors);
+    }
 }

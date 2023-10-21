@@ -34,7 +34,10 @@ class RequiredFieldsValidationStrategy implements ValidationStrategy
         $this->errors = [];
 
         foreach ($this->requiredFields as $field) {
-            if (empty($data[$field])) {
+            $isFieldEmpty = !isset($data[$field]) || empty($data[$field]);
+            $isFieldArrayWithEmptyValues = isset($data[$field]) && is_array($data[$field]) && array_filter($data[$field]) === [];
+
+            if ($isFieldEmpty || $isFieldArrayWithEmptyValues) {
                 $msg = ucwords(str_replace('_', ' ', $field));
                 $this->errors[$field] = $msg . ' is required.';
             }
